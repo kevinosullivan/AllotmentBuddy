@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: atiBeacon Webapp
+Implementation-Version: 2.0.1-SNAPSHOT
+Implementation-Vendor-Id: aero.sita.lab.atibeacon
+Build-Jdk: 1.7.0_45
+Built-By: kevinosullivan
+Implementation-Timestamp: 2014-02-20T15:54:49+0000
+Created-By: Apache Maven
+Implementation-Build: 16104
+

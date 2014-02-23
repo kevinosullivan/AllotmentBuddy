@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="controllerBeacon">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+<title>Allotment Buddy</title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+
+<link href="http://getbootstrap.com/examples/dashboard/dashboard.css"
+	rel="stylesheet">
+	
+	<style type="text/css">
+	
+	.angular-google-map-container { height: 600px; }
+	
+	
+	<!-- Styling of JSON -->
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; font-size: 9px;}
+.string { color: green; font-size: 9px;}
+.number { color: darkorange;font-size: 9px; }
+.boolean { color: blue; font-size: 9px;}
+.null { color: magenta; font-size: 9px;}
+.key { color: red;font-size: 9px; }
+
+</style>
+	
+	
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body ng-cloak ng-controller="CtrlBeacon">
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Allotment Buddy <small>{{versionString}}</small></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">Dashboard</a></li>
+					<li><a href="#">Settings</a></li>
+					<li><a href="#">Profile</a></li>
+					<li><a href="../logout">Logout</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li ng-class="{active: showMap==true}"><a href="#" ng-click="showMap=true;showList=false;">Map</a></li>
+					<li ng-class="{active: showList==true}"><a href="#" ng-click="showList=true; showMap=false">List</a></li>
+				</ul>
+				<!-- 
+				<ul class="nav nav-sidebar">
+					<li><a href="">Nav item</a></li>
+				</ul>
+				<ul class="nav nav-sidebar">
+					<li><a href="">Another nav item</a></li>
+				</ul>
+				 -->
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-show="showMap">
+				<div>
+					<google-map center="map.center" zoom="map.zoom" draggable='true'>
+					
+					<markers models="map.beaconMarkers" coords="'self'" fit='true' doCluster='true'>
+						<windows show="'showWindow'" closeClick="'closeClick'">
+	                		<p ng-non-bindable  ng-click="editBeacon(metaData)">{{ metaData }}</p>
+	            		</windows> 
+			        </markers>
+					</google-map> 
+				</div>
+			</div>
+			
+			
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-show="showList">
+				<div>
+					<table class="table table-bordered">
+						<tr>
+							<th>Beacon Id</th>
+							<th>UUID</th>
+							<th>MajorId</th>
+							<th>MinorId</th>
+							<th>Public</th>
+							<th>lat</th>
+							<th>lon</th>
+							<th>Last Update</th>
+							<th>Date Added</th>
+							<th>Meta Data</th>
+						</tr>
+	
+						<tr ng-repeat="beacon in myBeacons" >
+							<td>{{beacon.idBeacon}}</td>
+							<td>{{beacon.uuid}}</td>
+							<td>{{beacon.majorId}}</td>
+							<td>{{beacon.minorId}}</td>
+							<td>{{beacon.publicBeacon}}</td>
+							<td>{{beacon.latitude}}</td>
+							<td>{{beacon.longitude }}</td>
+							<td>{{beacon.lastUpdate | date:'MMM-dd HH:mm'}}</td>
+							<td>{{beacon.dateAdded | date:'MMM-dd HH:mm'}}</td>
+							<td>{{beacon.metaData}}</td>
+						</tr>
+	
+					</table>
+				</div>
+			</div>
+			
+			<!--  This div is only shown if their is a beacon to edit. -->
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-show="beaconBeingEdited!=null">
+				<div>
+					<p>BEACON UNDER EDIT</p> 
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script
+		src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script src="//getbootstrap.com/assets/js/docs.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-resource.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-route.min.js"></script>
+
+	<!--  Include the Google Maps stuff -->
+	<script src='//maps.googleapis.com/maps/api/js?sensor=false'></script>
+	<script src='./js/3rdParty/underscore-min.js'></script>
+	<script src="./js/3rdParty/angular-google-maps.min.js"></script>
+
+
+	<script src="js/3rdParty/moment.min.js"></script>
+	<script src="js/3rdParty/angular-moment.min.js"></script>
+
+	<!-- And finally the Beacon Integration -->
+	<script src="./js/controllerBeacon.js"></script>
+	<script src="./js/serviceBeaconAPI.js"></script>
+	<script src="../js/version.js"></script>
+</body>
+</html>

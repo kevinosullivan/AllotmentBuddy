@@ -1,0 +1,103 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans 
+    	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+        http://www.springframework.org/schema/data/jpa
+   		http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd">
+
+
+	<!-- -=-==-=-=-=-=-==-=-=-=-=-==-=-=-=-=-==-=-=-= -->
+	<!-- This file defines the objects used for the data layer -->
+	<!-- -=-==-=-=-=-=-==-=-=-=-=-==-=-=-=-=-==-=-=-= -->
+
+	<jpa:repositories base-package="com.thesullies.allotment.jpa.repositories" />
+	<tx:annotation-driven/>
+
+	<bean name="driverClassName" class="java.lang.String">
+		<constructor-arg value="com.mysql.jdbc.Driver" />
+	</bean>
+	
+<!-- 
+	<bean name="jdbcURL" class="java.lang.String">
+		<constructor-arg value="${JDBC_CONNECTION_STRING}" />
+	</bean>
+-->
+	<bean name="jdbcURL" class="java.lang.String">
+		<constructor-arg value="jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}" />
+	</bean>	
+	
+
+	<bean id="eventsDataSource" destroy-method="close"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" ref="driverClassName" />
+		<property name="url" ref="jdbcURL" />
+		<!-- http://stackoverflow.com/questions/3760907/spring-jdbctemplate-other-mysql-datasource-than-apache-commons -->
+		<property name="minEvictableIdleTimeMillis" value="120000" />
+		<property name="testOnBorrow" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="120000" />
+		<property name="minIdle" value="1" />
+	</bean>
+
+	<bean id="hibernateProperties" class="java.util.Properties">
+		<constructor-arg>
+			<map>
+				<entry key="hibernate.hbm2ddl.auto" value="update" />
+				<entry key="hibernate.show_sql" value="false" />
+				<entry key="hibernate.format_sql" value="true" />
+				<entry key="hibernate.generateDdl" value="true" />
+				<entry key="hibernate.dialect"
+					value="com.thesullies.allotment.jpa.repositories.Mysql5BitBooleanDialect" />
+				<!-- <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" 
+					/> -->
+
+				
+				<entry key="hibernate.connection.username" value="${RDS_USERNAME}" />
+				<entry key="hibernate.connection.password" value="${RDS_PASSWORD}" />
+
+				
+				<!-- Enable C3P0 connection pooling -->
+				<entry key="hibernate.connection.provider_class"
+					value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider" />
+				<entry key="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+				<entry key="hibernate.connection.url">
+					<bean class="java.lang.String">
+						<constructor-arg ref="jdbcURL" />
+					</bean>
+				</entry>
+				<entry key="hibernate.c3p0.max_size" value="100" />
+				<entry key="hibernate.c3p0.min_size" value="1" />
+				<entry key="hibernate.c3p0.acquire_increment" value="1" />
+				<entry key="hibernate.c3p0.idle_test_period" value="3000" />
+				<entry key="hibernate.c3p0.max_statements" value="0" />
+				<entry key="hibernate.c3p0.timeout" value="100" />
+		</map>
+	</constructor-arg>
+</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="eventsDataSource" />
+		<property name="persistenceUnitName" value="spring-jpa" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+
+				<!-- <property name="showSql" value="true" /> <property name="generateDdl" 
+					value="true" /> <property name="database" value="HSQL" /> -->
+			</bean>
+		</property>
+
+		<property name="jpaProperties" ref="hibernateProperties" />
+	</bean>
+
+
+</beans>

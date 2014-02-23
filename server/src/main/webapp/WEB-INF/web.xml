@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+	<display-name>SITA Lab atiBeacon, Web Application</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext instead of the default XmlWebApplicationContext -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<!-- 
+	<listener>
+		<listener-class>aero.sita.lab.atibeacon.utils.SessionCounter</listener-class>
+	</listener>
+	 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			WEB-INF/classes/spring/spring.applicationContext.xml
+			<!-- WEB-INF/classes/spring/spring.applicationContext-security.xml -->
+		</param-value>
+	</context-param>
+
+	<!-- Spring Security Filter
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 -->
+	
+	<servlet>
+		<servlet-name>TheAPI</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>com.thesullies.allotment.api.AllotmentApplicationAPIs</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TheAPI</servlet-name>
+		<url-pattern>/allotment/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Configuration for the Swagger docs -->
+	<servlet>
+		<servlet-name>DefaultJaxrsConfig</servlet-name>
+		<servlet-class>com.wordnik.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
+		<init-param>
+			<param-name>api.version</param-name>
+			<param-value>1.0.0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.basepath</param-name>
+			<!-- set the base path to .. because the generated swagger json docs will 
+				be used only in the Swagger Console. -->
+			<param-value>..</param-value>
+			<!-- <param-value>http://localhost:8080/CrewServices/</param-value> -->
+			<!--<param-value>https://dev.crewplatform.aero/</param-value> -->
+		</init-param>
+		<!-- <init-param> <param-name>swagger.filter</param-name> <param-value>aero.sita.lab.atibeacon.services.swagger.SwaggerFilter</param-value> 
+			</init-param> -->
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+<!-- 
+	<listener>
+		<listener-class>aero.sita.lab.atibeacon.startup.SystemStartupChecks</listener-class>
+	</listener>
+ -->
+</web-app>

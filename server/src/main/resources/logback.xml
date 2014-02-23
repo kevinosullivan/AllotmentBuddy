@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns:log4j="http://jakarta.apache.org/log4j/" scan="true" scanPeriod="60 seconds">
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+		<syslogHost>localhost</syslogHost>
+		<facility>AUTH</facility>
+		<suffixPattern>%d [%thread] %-5level %logger{35} - %msg%n</suffixPattern>
+	</appender>
+	<appender name="FileLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<param name="file" value="/apps/allotment/logs/allotment.log" />
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>/apps/allotment/logs/allotment.log.%d{yyyy-MM-dd}</fileNamePattern>
+
+			<!-- keep 30 days worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<param name="Append" value="true" />
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<define name="environment" class="com.thesullies.allotment.utils.QuoteStrippingPropertyDefiner">
+		<propertyValue>${PARAM1}</propertyValue>
+	</define>
+	
+	<include resource="./logback.${environment}.includedConfig.xml" />
+
+</configuration>

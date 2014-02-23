@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<included>
+
+	<logger name="ServicesTransactionLog" additivity="false">
+		<!-- This is the transaction logger for use with the SIP Analysis Logger -->
+		<level value="debug" />
+		<appender-ref ref="ServicesTransactionLog" />
+	</logger>
+
+	<!--  Set default output to WARN, but all SITA Lab output to INFO -->
+	
+	<logger name="aero.sita.lab"  level="INFO" additivity="true" />
+
+	<root level="WARN">
+		<appender-ref ref="FileLog" />
+		<appender-ref ref="SYSLOG" />
+	</root>
+	
+</included>
